@@ -1,0 +1,14 @@
+### Agregar un servicio a una reserva
+POST http://localhost:3000/reserva-servicio
+Content-Type: application/json
+
+{
+  "id_reserva": 1,
+  "id_servicio": 2
+}
+
+### Eliminar un servicio de una reserva
+DELETE http://localhost:3000/reserva-servicio/1/2
+
+### Listar servicios de una reserva
+GET http://localhost:3000/reserva-servicio/1

@@ -1,0 +1,66 @@
+### === BÚSQUEDA DE CANCHAS ===
+
+### 1. Obtener tipos de cancha (deportes)
+GET http://localhost:3000/api/tipo-canchas
+Content-Type: application/json
+
+###
+
+### 2. Obtener localidades
+GET http://localhost:3000/api/localidades
+Content-Type: application/json
+
+###
+
+### 3. Búsqueda por nombres (POST) - Fútbol en Buenos Aires
+POST http://localhost:3000/api/buscar-canchas
+Content-Type: application/json
+
+{
+  "deporte": "Fútbol",
+  "localidad": "Buenos Aires",
+  "fecha": "2025-11-15"
+}
+
+###
+
+### 4. Búsqueda por nombres (POST) - Hockey en Buenos Aires
+POST http://localhost:3000/api/buscar-canchas
+Content-Type: application/json
+
+{
+  "deporte": "Hockey", 
+  "localidad": "Buenos Aires",
+  "fecha": "2025-11-15"
+}
+
+###
+
+### 5. Búsqueda por nombres (POST) - Tenis en Buenos Aires
+POST http://localhost:3000/api/buscar-canchas
+Content-Type: application/json
+
+{
+  "deporte": "Tenis",
+  "localidad": "Buenos Aires", 
+  "fecha": "2025-11-15"
+}
+
+###
+
+### 6. Búsqueda GET con query params - Fútbol (id_tipo=1) en Buenos Aires (id_localidad=1)
+GET http://localhost:3000/api/buscar-canchas?fecha=2025-11-15&id_tipo=1&id_localidad=1
+Content-Type: application/json
+
+###
+
+### 7. Búsqueda sin fecha (usa fecha actual)
+POST http://localhost:3000/api/buscar-canchas
+Content-Type: application/json
+
+{
+  "deporte": "Fútbol",
+  "localidad": "Buenos Aires"
+}
+
+###

@@ -1,0 +1,44 @@
+### ========================================
+### LOCALIDAD
+### ========================================
+
+### Crear Localidad 1
+POST http://localhost:3000/api/localidades
+Content-Type: application/json
+
+{
+  "nombre": "Rosario"
+}
+
+### Crear Localidad 2
+POST http://localhost:3000/api/localidades
+Content-Type: application/json
+
+{
+  "nombre": "Santa Fe"
+}
+
+### Crear Localidad 3
+POST http://localhost:3000/api/localidades
+Content-Type: application/json
+
+{
+  "nombre": "Buenos Aires"
+}
+
+### Obtener todas las Localidades
+GET http://localhost:3000/api/localidades
+
+### Obtener Localidad por ID
+GET http://localhost:3000/api/localidades/1
+
+### Actualizar Localidad
+PUT http://localhost:3000/api/localidades/1
+Content-Type: application/json
+
+{
+  "nombre": "Rosario Centro"
+}
+
+### Eliminar Localidad
+DELETE http://localhost:3000/api/localidades/3

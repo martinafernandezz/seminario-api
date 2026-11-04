@@ -1,0 +1,30 @@
+### Obtener TODOS los precios (NUEVO - necesario para el frontend)
+GET http://localhost:3000/api/precios
+
+### Obtener precios por cancha
+GET http://localhost:3000/api/precios/cancha/1
+
+### Obtener el último precio (Precio vigente)
+GET http://localhost:3000/api/precios/actual/1
+
+### Crear nuevo precio
+POST http://localhost:3000/api/precios
+Content-Type: application/json
+
+{
+  "id_cancha": 1,
+  "valor_por_hora": 2500,
+  "fecha_vigencia": "2024-01-15"
+}
+
+### Actualizar un precio
+PUT http://localhost:3000/api/precios/2
+Content-Type: application/json
+
+{
+  "valor_por_hora": 3000,
+  "fecha_vigencia": "2024-01-15"
+}
+
+### Eliminar un precio
+DELETE http://localhost:3000/api/precios/3

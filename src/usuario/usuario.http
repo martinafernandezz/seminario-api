@@ -1,0 +1,83 @@
+### Crear Usuario Cliente 1
+POST http://localhost:3000/api/usuarios
+Content-Type: application/json
+
+{
+  "dni": "123456789",
+  "nombre": "Juan Roman",
+  "apellido": "Riquelme",
+  "id_localidad": 1,
+  "rol": "Administrador"
+}
+
+### Crear Usuario Cliente 2
+POST http://localhost:3000/api/usuarios
+Content-Type: application/json
+
+{
+  "dni": "23456789",
+  "nombre": "María",
+  "apellido": "González",
+  "id_localidad": 1,
+  "rol": "cliente"
+}
+
+### Crear Usuario Cliente 3
+POST http://localhost:3000/api/usuarios
+Content-Type: application/json
+
+{
+  "dni": "34567890",
+  "nombre": "Carlos",
+  "apellido": "Rodríguez",
+  "id_localidad": 2,
+  "rol": "cliente"
+}
+
+### Crear Usuario Administrador
+POST http://localhost:3000/api/usuarios
+Content-Type: application/json
+
+{
+  "dni": "99999999",
+  "nombre": "Admin",
+  "apellido": "Sistema",
+  "id_localidad": 1,
+  "rol": "administrador"
+}
+
+### Obtener todos los Usuarios
+GET http://localhost:3000/api/usuarios
+
+### Obtener Usuario por ID
+GET http://localhost:3000/api/usuarios/id/2
+
+### Obtener Usuario por DNI
+GET http://localhost:3000/api/usuarios/dni/12345678
+
+
+### Obtener Usuarios por Rol (clientes)
+GET http://localhost:3000/api/usuarios/rol/cliente
+
+### Obtener Usuarios por Rol (administradores)
+GET http://localhost:3000/api/usuarios/rol/administrador
+
+### Actualizar Usuario
+PUT http://localhost:3000/api/usuarios/6
+Content-Type: application/json
+
+{
+  "nombre": "Martin",
+  "apellido": "Palermo"
+}
+
+### Actualizar Usuario (cambiar localidad)
+PATCH http://localhost:3000/api/usuarios/6
+Content-Type: application/json
+
+{
+  "id_localidad": 2
+}
+
+### Eliminar Usuario
+DELETE http://localhost:3000/api/usuarios/6

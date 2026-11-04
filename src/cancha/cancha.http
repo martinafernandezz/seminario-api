@@ -1,0 +1,85 @@
+### Crear Cancha 1
+POST http://localhost:3000/api/canchas
+Content-Type: application/json
+
+{
+  "nombre": "Cancha Principal",
+  "estado": "disponible",
+  "id_tipo": 1,
+  "id_localidad": 1
+}
+
+### Crear Cancha 2
+POST http://localhost:3000/api/canchas
+Content-Type: application/json
+
+{
+  "nombre": "Cancha Secundaria",
+  "estado": "disponible",
+  "id_tipo": 1,
+  "id_localidad": 2
+}
+
+### Crear Cancha 3
+POST http://localhost:3000/api/canchas
+Content-Type: application/json
+
+{
+  "nombre": "Cancha Techada",
+  "estado": "mantenimiento",
+  "id_tipo": 2,
+  "id_localidad": 1
+}
+
+### Crear Cancha 4
+POST http://localhost:3000/api/canchas
+Content-Type: application/json
+
+{
+  "nombre": "Cancha de Tenis 1",
+  "estado": "disponible",
+  "id_tipo": 3,
+  "id_localidad": 3
+}
+
+### Obtener todas las Canchas
+GET http://localhost:3000/api/canchas
+
+
+GET http://localhost:3000/api/canchas/tipo/:id_tipo
+
+### Obtener Cancha por ID
+GET http://localhost:3000/api/canchas/1
+
+### Obtener Canchas por Tipo
+GET http://localhost:3000/api/canchas/id_tipo/1
+
+### Actualizar Cancha 1 (estado)
+PUT http://localhost:3000/api/canchas/1
+Content-Type: application/json
+
+{
+  "estado": "ocupada"
+}
+
+### Actualizar Cancha 2 (nombre y estado)
+PUT http://localhost:3000/api/canchas/2
+Content-Type: application/json
+
+{
+  "nombre": "Cancha VIP",
+  "estado": "disponible"
+}
+
+### Actualizar Cancha 3 (nombre, estado y tipo)
+PUT http://localhost:3000/api/canchas/3
+Content-Type: application/json
+
+{
+  "nombre": "Cancha Techada Premium",
+  "estado": "disponible",
+  "id_tipo": 2
+}
+
+### Eliminar Cancha 4
+DELETE http://localhost:3000/api/canchas/4

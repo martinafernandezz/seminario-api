@@ -1,0 +1,40 @@
+### 🟢 CREAR PAGO
+POST http://localhost:3000/api/pagos
+Content-Type: application/json
+
+{
+  "id_reserva": 1,
+  "monto": 15000,
+  "metodo_pago": "tarjeta"
+}
+
+### 🟢 OBTENER PAGO POR ID
+GET http://localhost:3000/api/pagos/1
+
+### 🟢 OBTENER PAGO POR RESERVA
+GET http://localhost:3000/api/pagos/reserva/1
+
+### 🟢 PROCESAR PAGO (confirmar)
+PUT http://localhost:3000/api/pagos/1/procesar
+Content-Type: application/json
+
+{
+  "transaccion_id": "TXN_123456789"
+}
+
+### 🟢 SIMULAR PAGO (con delay de 3 segundos)
+POST http://localhost:3000/api/pagos/1/simular
+
+### 🟢 OBTENER TODOS LOS PAGOS
+GET http://localhost:3000/api/pagos
+
+### 🟢 ACTUALIZAR PAGO
+PUT http://localhost:3000/api/pagos/1
+Content-Type: application/json
+
+{
+  "estado": "completado"
+}
+
+### 🟢 ELIMINAR PAGO
+DELETE http://localhost:3000/api/pagos/1

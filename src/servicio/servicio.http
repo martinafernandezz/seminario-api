@@ -1,0 +1,44 @@
+### 🟢 Obtener todos los servicios
+GET http://localhost:3000/servicios
+Content-Type: application/json
+
+
+### 🟢 Obtener un servicio por ID
+GET http://localhost:3000/servicios/1
+Content-Type: application/json
+
+
+
+// Obtener servicios asociados a una reserva
+GET http://localhost:3000/servicios/reserva/1
+Content-Type: application/json
+
+
+//  Crear un nuevo servicio
+POST http://localhost:3000/servicios
+Content-Type: application/json
+
+
+
+
+// Actualizar un servicio
+PUT http://localhost:3000/servicios/1
+Content-Type: application/json
+
+{
+  "precio": 6000
+}
+
+
+//  Eliminar un servicio
+DELETE http://localhost:3000/servicios/5
+Content-Type: application/json
+
+
+//  Asignar servicios a una reserva
+POST http://localhost:3000/servicios/reserva/1
+Content-Type: application/json
+
+{
+  "id_servicios": [1, 2, 4]
+}

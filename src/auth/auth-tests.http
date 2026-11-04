@@ -1,0 +1,136 @@
+# ═══════════════════════════════════════════════════════════
+# 🔐 AUTH API - Tests de autenticación con JWT
+# ═══════════════════════════════════════════════════════════
+
+@baseUrl = http://localhost:3000/api/auth
+@contentType = application/json
+
+# ═══════════════════════════════════════════════════════════
+# 📝 REGISTER - Registrar nuevo usuario (cliente)
+# ═══════════════════════════════════════════════════════════
+# @name register
+POST {{baseUrl}}/register
+Content-Type: {{contentType}}
+
+{
+  "dni": "12345678",
+  "username": "testuser",
+  "password": "password123",
+  "nombre": "Test",
+  "apellido": "User",
+  "email": "test@example.com",
+  "telefono": "3412345678",
+  "rol": "cliente",
+  "id_localidad": 1
+}
+
+###
+
+# Guardar token del registro
+@registerToken = {{register.response.body.token}}
+
+# ═══════════════════════════════════════════════════════════
+# 📝 REGISTER - Registrar administrador
+# ═══════════════════════════════════════════════════════════
+# @name registerAdmin
+POST {{baseUrl}}/register
+Content-Type: {{contentType}}
+
+{
+  "dni": "87654321",
+  "username": "admin",
+  "password": "admin123",
+  "nombre": "Admin",
+  "apellido": "User",
+  "email": "admin@example.com",
+  "telefono": "3419876543",
+  "rol": "administrador",
+  "id_localidad": 1
+}
+
+###
+
+@adminToken = {{registerAdmin.response.body.token}}
+
+# ═══════════════════════════════════════════════════════════
+# 🔑 LOGIN - Iniciar sesión (cliente)
+# ═══════════════════════════════════════════════════════════
+# @name login
+POST {{baseUrl}}/login
+Content-Type: {{contentType}}
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+###
+
+# Guardar token del login
+@token = {{login.response.body.token}}
+
+# ═══════════════════════════════════════════════════════════
+# 🔑 LOGIN - Iniciar sesión (admin)
+# ═══════════════════════════════════════════════════════════
+# @name loginAdmin
+POST {{baseUrl}}/login
+Content-Type: {{contentType}}
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+###
+
+# ═══════════════════════════════════════════════════════════
+# 🔄 REFRESH - Renovar token
+# ═══════════════════════════════════════════════════════════
+POST {{baseUrl}}/refresh
+Authorization: Bearer {{token}}
+
+###
+
+# ═══════════════════════════════════════════════════════════
+# ❌ ERROR CASES - Casos de error
+# ═══════════════════════════════════════════════════════════
+
+# Login con credenciales incorrectas
+POST {{baseUrl}}/login
+Content-Type: {{contentType}}
+
+{
+  "username": "testuser",
+  "password": "wrongpassword"
+}
+
+###
+
+# Register con username duplicado
+POST {{baseUrl}}/register
+Content-Type: {{contentType}}
+
+{
+  "dni": "99999999",
+  "username": "testuser",
+  "password": "password123",
+  "nombre": "Duplicate",
+  "apellido": "User",
+  "email": "duplicate@example.com",
+  "telefono": "3411111111",
+  "rol": "cliente",
+  "id_localidad": 1
+}
+
+###
+
+# Register sin campos obligatorios
+POST {{baseUrl}}/register
+Content-Type: {{contentType}}
+
+{
+  "nombre": "New",
+  "apellido": "User"
+}
+
+###

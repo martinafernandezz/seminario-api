@@ -1,0 +1,53 @@
+### Crear Tipo de Cancha 1
+POST http://localhost:3000/api/tipo-canchas
+Content-Type: application/json
+
+{
+  "nombre": "Cancha de Fútbol 5",
+  "deporte": "Fútbol"
+}
+
+### Crear Tipo de Cancha 2
+POST http://localhost:3000/api/tipo-canchas
+Content-Type: application/json
+
+{
+  "nombre": "Cancha de Fútbol 11",
+  "deporte": "Fútbol"
+}
+
+### Crear Tipo de Cancha 3
+POST http://localhost:3000/api/tipo-canchas
+Content-Type: application/json
+
+{
+  "nombre": "Cancha de Tenis",
+  "deporte": "Tenis"
+}
+
+### Crear Tipo de Cancha 4
+POST http://localhost:3000/api/tipo-canchas
+Content-Type: application/json
+
+{
+  "nombre": "Cancha de Paddle",
+  "deporte": "Paddle"
+}
+
+### Obtener todos los Tipos de Cancha
+GET http://localhost:3000/api/tipo-canchas
+
+### Obtener Tipo de Cancha por ID
+GET http://localhost:3000/api/tipo-canchas/1
+
+### Actualizar Tipo de Cancha
+PUT http://localhost:3000/api/tipo-canchas/1
+Content-Type: application/json
+
+{
+  "nombre": "Cancha de Fútbol 5 Sintético",
+  "deporte": "Fútbol"
+}
+
+### Eliminar Tipo de Cancha
+DELETE http://localhost:3000/api/tipo-canchas/4

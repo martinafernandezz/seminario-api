@@ -1,0 +1,85 @@
+# ═══════════════════════════════════════════════════════════
+# 🔒 RUTAS PROTEGIDAS - Tests con JWT
+# ═══════════════════════════════════════════════════════════
+
+@baseUrl = http://localhost:3000/api
+@contentType = application/json
+
+# ⚠️ IMPORTANTE: Primero ejecutar auth-tests.http para obtener tokens
+
+# Tokens (copiar de auth-tests.http después de hacer login)
+@clientToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF91c3VhcmlvIjo2LCJ1c2VybmFtZSI6InRlc3R1c2VyIiwicm9sIjoiY2xpZW50ZSIsImlhdCI6MTc3MzM0MTY3MywiZXhwIjoxNzczNDI4MDczfQ.G79aR53w_YOoiPmMk6lKO1H2hVbwJnZGzHVJ16QgdlI
+@adminToken = PEGAR_TOKEN_ADMIN_AQUI
+
+# ═══════════════════════════════════════════════════════════
+# ✅ CASOS EXITOSOS
+# ═══════════════════════════════════════════════════════════
+
+### GET /usuarios - Solo admin puede ver todos los usuarios
+GET {{baseUrl}}/usuarios
+Authorization: Bearer {{adminToken}}
+
+###
+
+### GET /usuarios/:id - Usuario puede ver su propio perfil
+# Primero necesitas saber tu ID (viene en el response del login)
+GET {{baseUrl}}/usuarios/1
+Authorization: Bearer {{clientToken}}
+
+###
+
+### GET /usuarios/:id - Admin puede ver cualquier perfil
+GET {{baseUrl}}/usuarios/2
+Authorization: Bearer {{adminToken}}
+
+###
+
+### PATCH /usuarios/:id - Usuario puede actualizar su propio perfil
+PATCH {{baseUrl}}/usuarios/1
+Authorization: Bearer {{clientToken}}
+Content-Type: {{contentType}}
+
+{
+  "telefono": "3419999999"
+}
+
+###
+
+### DELETE /usuarios/:id - Solo admin puede eliminar usuarios
+DELETE {{baseUrl}}/usuarios/5
+Authorization: Bearer {{adminToken}}
+
+###
+
+# ═══════════════════════════════════════════════════════════
+# ❌ CASOS DE ERROR (deben fallar con 401 o 403)
+# ═══════════════════════════════════════════════════════════
+
+### Sin token - debe retornar 401
+GET {{baseUrl}}/usuarios
+
+###
+
+### Token inválido - debe retornar 403
+GET {{baseUrl}}/usuarios
+Authorization: Bearer token_invalido_123
+
+###
+
+### Cliente intentando ver todos los usuarios - debe retornar 403
+GET {{baseUrl}}/usuarios
+Authorization: Bearer {{clientToken}}
+
+###
+
+### Cliente intentando ver perfil de otro usuario - debe retornar 403
+GET {{baseUrl}}/usuarios/999
+Authorization: Bearer {{clientToken}}
+
+###
+
+### Cliente intentando eliminar usuario - debe retornar 403
+DELETE {{baseUrl}}/usuarios/3
+Authorization: Bearer {{clientToken}}
+
+###

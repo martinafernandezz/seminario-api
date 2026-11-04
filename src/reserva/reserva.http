@@ -1,0 +1,37 @@
+### Crear Reserva 1
+POST http://localhost:3000/api/reservas
+Content-Type: application/json
+
+{
+  "id_usuario": 1,
+  "id_cancha": 2,
+  "fecha": "2025-11-10",
+  "hora_inicio": "15:00:00",
+  "hora_fin": "17:00:00",
+  "precio_total": 9000,
+}
+
+### Obtener todas las reservas
+GET http://localhost:3000/api/reservas
+
+### Obtener reserva por ID
+GET http://localhost:3000/api/reservas/1
+
+
+### Eliminar un servicio de una reserva
+DELETE http://localhost:3000/api/reservas/1
+
+### Actualizar una reserva
+PUT http://localhost:3000/api/reservas
+Content-Type: application/json
+
+{
+  "id_reserva": 1,
+  "fecha": "2025-11-12",
+  "hora_inicio": "16:00:00",
+  "hora_fin": "18:00:00",
+  "precio_total": 9500
+}
+
+### Eliminar una reserva
+DELETE http://localhost:3000/api/reservas/1

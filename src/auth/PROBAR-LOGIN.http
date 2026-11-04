@@ -1,0 +1,148 @@
+# ═══════════════════════════════════════════════════════════
+# 🔐 AUTH - LOGIN CON USUARIOS EXISTENTES
+# ═══════════════════════════════════════════════════════════
+# ✅ Las contraseñas fueron actualizadas a bcrypt
+
+@baseUrl = http://localhost:3000/api/auth
+
+# ═══════════════════════════════════════════════════════════
+# 🔑 LOGIN - Cliente
+# ═══════════════════════════════════════════════════════════
+# @name loginCliente
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "cliente",
+  "password": "cliente123"
+}
+
+# ✅ DEBE FUNCIONAR AHORA
+
+###
+
+@clienteToken = {{loginCliente.response.body.token}}
+
+# ═══════════════════════════════════════════════════════════
+# 🔑 LOGIN - Administrador
+# ═══════════════════════════════════════════════════════════
+# @name loginAdmin
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+###
+
+@adminToken = {{loginAdmin.response.body.token}}
+
+# ═══════════════════════════════════════════════════════════
+# 🔑 LOGIN - Cliente 2
+# ═══════════════════════════════════════════════════════════
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "cliente2",
+  "password": "cliente321"
+}
+
+###
+
+# ═══════════════════════════════════════════════════════════
+# 🔑 LOGIN - Martina (Admin)
+# ═══════════════════════════════════════════════════════════
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "martina",
+  "password": "marti123"
+}
+
+###
+
+# ═══════════════════════════════════════════════════════════
+# 🔄 REFRESH TOKEN
+# ═══════════════════════════════════════════════════════════
+POST {{baseUrl}}/refresh
+Authorization: Bearer {{clienteToken}}
+
+###
+
+# ═══════════════════════════════════════════════════════════
+# 📝 REGISTER - Crear nuevo usuario
+# ═══════════════════════════════════════════════════════════
+# @name register
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "dni": "99999999",
+  "username": "nuevousuario",
+  "password": "password123",
+  "nombre": "Nuevo",
+  "apellido": "Usuario",
+  "email": "nuevo@example.com",
+  "telefono": "3412345678",
+  "rol": "cliente",
+  "id_localidad": 1
+}
+
+###
+
+# ═══════════════════════════════════════════════════════════
+# ✅ PROBAR RUTA PROTEGIDA - Ver perfil propio
+# ═══════════════════════════════════════════════════════════
+GET http://localhost:3000/api/usuarios/1
+Authorization: Bearer {{clienteToken}}
+
+###
+
+# ═══════════════════════════════════════════════════════════
+# ✅ PROBAR RUTA ADMIN - Ver todos los usuarios
+# ═══════════════════════════════════════════════════════════
+GET http://localhost:3000/api/usuarios
+Authorization: Bearer {{adminToken}}
+
+###
+
+# ═══════════════════════════════════════════════════════════
+# ❌ CASOS DE ERROR
+# ═══════════════════════════════════════════════════════════
+
+# Login con contraseña incorrecta
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "cliente",
+  "password": "wrongpassword"
+}
+
+###
+
+# Login con usuario inexistente
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "noexiste",
+  "password": "123456"
+}
+
+###
+
+# Acceder sin token (debe dar 401)
+GET http://localhost:3000/api/usuarios
+
+###
+
+# Cliente intentando ver todos los usuarios (debe dar 403)
+GET http://localhost:3000/api/usuarios
+Authorization: Bearer {{clienteToken}}
+
+###
