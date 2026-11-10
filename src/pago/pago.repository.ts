@@ -23,7 +23,7 @@ export class PagoRepository {
     return this.repository.findOne({
       where: { id_reserva },
       relations: ['reserva'],
-      order: { fecha_creacion: 'DESC' }
+      order: { id_pago: 'DESC' }
     });
   }
 
@@ -31,7 +31,7 @@ export class PagoRepository {
     return this.repository.find({
       where: { id_reserva },
       relations: ['reserva'],
-      order: { fecha_creacion: 'DESC' }
+      order: { id_pago: 'DESC' }
     });
   }
 
@@ -39,7 +39,7 @@ export class PagoRepository {
     return this.repository.find({
       where: { estado },
       relations: ['reserva'],
-      order: { fecha_creacion: 'DESC' }
+      order: { id_pago: 'DESC' }
     });
   }
 
@@ -62,7 +62,7 @@ export class PagoRepository {
   async findAll(): Promise<Pago[]> {
     return this.repository.find({
       relations: ['reserva'],
-      order: { fecha_creacion: 'DESC' }
+      order: { id_pago: 'DESC' }
     });
   }
 }

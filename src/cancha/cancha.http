@@ -5,8 +5,7 @@ Content-Type: application/json
 {
   "nombre": "Cancha Principal",
   "estado": "disponible",
-  "id_tipo": 1,
-  "id_localidad": 1
+  "id_tipo": 1
 }
 
 ### Crear Cancha 2
@@ -16,8 +15,7 @@ Content-Type: application/json
 {
   "nombre": "Cancha Secundaria",
   "estado": "disponible",
-  "id_tipo": 1,
-  "id_localidad": 2
+  "id_tipo": 1
 }
 
 ### Crear Cancha 3
@@ -27,8 +25,7 @@ Content-Type: application/json
 {
   "nombre": "Cancha Techada",
   "estado": "mantenimiento",
-  "id_tipo": 2,
-  "id_localidad": 1
+  "id_tipo": 2
 }
 
 ### Crear Cancha 4
@@ -38,8 +35,7 @@ Content-Type: application/json
 {
   "nombre": "Cancha de Tenis 1",
   "estado": "disponible",
-  "id_tipo": 3,
-  "id_localidad": 3
+  "id_tipo": 3
 }
 
 ### Obtener todas las Canchas

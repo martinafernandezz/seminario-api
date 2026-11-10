@@ -75,7 +75,7 @@ router.get('/usuarios/:id', authenticateToken, requireOwnerOrAdmin, controller.o
 **Métodos:**
 
 #### `register(data)`
-1. Valida que username, password y email estén presentes
+1. Valida que username, password y mail estén presentes
 2. Verifica que el username no exista
 3. Hashea la contraseña con bcrypt
 4. Crea el usuario en la BD
@@ -133,7 +133,7 @@ router.get('/', authenticateToken, requireAdmin, controller.obtenerTodos);
 
 ```
 1. Cliente → POST /api/auth/register
-   Body: {username, password, email, nombre, ...}
+   Body: {username, password, mail, nombre, ...}
 
 2. auth.service.register()
    ├─ Valida campos obligatorios
@@ -225,10 +225,9 @@ Content-Type: application/json
   "password": "password123",
   "nombre": "Test",
   "apellido": "User",
-  "email": "test@example.com",
+  "mail": "test@example.com",
   "telefono": "3412345678",
-  "rol": "cliente",
-  "id_localidad": 1
+  "rol": "cliente"
 }
 ```
 
@@ -243,7 +242,7 @@ Content-Type: application/json
     "username": "testuser",
     "nombre": "Test",
     "apellido": "User",
-    "email": "test@example.com",
+    "mail": "test@example.com",
     "rol": "cliente"
   }
 }

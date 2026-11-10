@@ -16,7 +16,7 @@ export class UsuarioRepository {
     return this.repository.findOne({ where: { id_usuario } });
   }
 
-  async findByDni(dni: string): Promise<Usuario | null> {
+  async findByDni(dni: number): Promise<Usuario | null> {
     return this.repository.findOne({ where: { dni } });
   }
 
@@ -25,8 +25,8 @@ export class UsuarioRepository {
   }
 
   async create(data: Partial<Usuario>): Promise<Usuario> {
-    if (!data.email || !data.username || !data.password) {
-      throw new Error('Email, username y password son campos obligatorios');
+    if (!data.mail || !data.username || !data.password) {
+      throw new Error('Mail, username y password son campos obligatorios');
     }
     
     const usuario = this.repository.create(data);

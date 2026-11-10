@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Servicio } from '../servicio/servicio.entity.js';
+import { TurnoFijo } from '../turno_fijo/turno-fijo.entity.js';
 
 @Entity('reserva')
 export class Reserva {
@@ -11,6 +12,9 @@ export class Reserva {
 
   @Column({ name: 'id_cancha', type: 'int' })
   id_cancha!: number;
+
+  @Column({ name: 'id_turno_fijo', type: 'int', nullable: true })
+  id_turno_fijo?: number | null;
 
   @Column({ name: 'fecha', type: 'date' })
   fecha!: string;
@@ -24,13 +28,21 @@ export class Reserva {
   @Column({ name: 'precio_total', type: 'decimal', precision: 10, scale: 2 })
   precio_total!: number;
 
-  // Relación ManyToMany con Servicio
-  @ManyToMany(() => Servicio, servicio => servicio.reservas)
-  @JoinTable({
-    name: 'reserva_servicio',
-    joinColumn: { name: 'id_reserva', referencedColumnName: 'id_reserva' },
-    inverseJoinColumn: { name: 'id_servicio', referencedColumnName: 'id_servicio' }
-  })
+  @Column({ name: 'puntaje', type: 'int', nullable: true })
+  puntaje?: number | null;
+
+  @Column({ name: 'resena', type: 'varchar', length: 500, nullable: true })
+  resena?: string | null;
+
+  @Column({ name: 'estado', type: 'varchar', length: 20, default: 'pendiente' })
+  estado?: string;
+
+  @ManyToOne(() => TurnoFijo, turno => turno.reservas, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'id_turno_fijo' })
+  turno_fijo?: TurnoFijo | null;
+
+  // un servicio pertenece a una sola reserva
+  @OneToMany(() => Servicio, servicio => servicio.reserva)
   servicios?: Servicio[];
 }
 
@@ -41,6 +53,10 @@ export interface ReservaCreate {
   hora_inicio: string;
   hora_fin: string;
   precio_total: number;
+  id_turno_fijo?: number;
+  puntaje?: number;
+  resena?: string;
+  estado?: string;
   id_servicios?: number[];
 }
 
@@ -51,5 +67,9 @@ export interface ReservaUpdate {
   hora_inicio?: string;
   hora_fin?: string;
   precio_total?: number;
+  id_turno_fijo?: number;
+  puntaje?: number;
+  resena?: string;
+  estado?: string;
   id_servicios?: number[];
 }

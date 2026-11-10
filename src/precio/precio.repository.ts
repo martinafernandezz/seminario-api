@@ -32,21 +32,18 @@ export class PrecioRepository {
     });
   }
 
-  async update(id_precio: number, precioData: PrecioUpdate): Promise<Precio | null> {
-    await this.repository.update({ id_precio }, precioData);
-    return this.repository.findOne({
-      where: { id_precio },
-      relations: ['cancha']
-    });
+  async update(id_cancha: number, fecha_vigencia: string, precioData: PrecioUpdate): Promise<Precio | null> {
+    await this.repository.update({ id_cancha, fecha_vigencia }, precioData);
+    return this.findById(id_cancha, fecha_vigencia);
   }
 
-  async delete(id_precio: number): Promise<void> {
-    await this.repository.delete({ id_precio });
+  async delete(id_cancha: number, fecha_vigencia: string): Promise<void> {
+    await this.repository.delete({ id_cancha, fecha_vigencia });
   }
 
-  async findById(id_precio: number): Promise<Precio | null> {
+  async findById(id_cancha: number, fecha_vigencia: string): Promise<Precio | null> {
     return this.repository.findOne({
-      where: { id_precio },
+      where: { id_cancha, fecha_vigencia },
       relations: ['cancha']
     });
   }

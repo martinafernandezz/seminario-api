@@ -6,6 +6,7 @@ import { Cancha } from '../cancha/cancha.entity.js';
 import { Servicio } from '../servicio/servicio.entity.js';
 import { Usuario } from '../usuario/usuario.entity.js';
 import { Pago } from '../pago/pago.entity.js';
+import { TurnoFijo } from '../turno_fijo/turno-fijo.entity.js';
 import { In, LessThanOrEqual } from 'typeorm';
 
 export class ReservaService {
@@ -15,6 +16,7 @@ export class ReservaService {
   private servicioRepository = AppDataSource.getRepository(Servicio);
   private usuarioRepository = AppDataSource.getRepository(Usuario);
   private pagoRepository = AppDataSource.getRepository(Pago);
+  private turnoFijoRepository = AppDataSource.getRepository(TurnoFijo);
 
   constructor() {
     this.repository = new ReservaRepository();
@@ -38,20 +40,11 @@ export class ReservaService {
       order: { fecha_vigencia: 'DESC' },
     });
 
-    if (precioVigente) {
-      return Number(precioVigente.valor_por_hora);
-    }
-
-    const cancha = await this.canchaRepository.findOne({ where: { id_cancha } });
-    if (!cancha) {
-      throw new Error(`No se encontró la cancha ${id_cancha}`);
-    }
-
-    if (cancha.precio_hora == null) {
+    if (!precioVigente) {
       throw new Error(`La cancha ${id_cancha} no tiene precio vigente configurado`);
     }
 
-    return Number(cancha.precio_hora);
+    return Number(precioVigente.precio_por_hora);
   }
   
   private async calcularPrecioTotal(data: {
@@ -125,7 +118,13 @@ export class ReservaService {
 
     const usuariosMap = new Map(usuarios.map((u) => [u.id_usuario, u]));
     const canchasMap = new Map(canchas.map((c) => [c.id_cancha, c]));
-    
+
+    const idsTurno = [...new Set(reservas.map((r) => r.id_turno_fijo).filter((id): id is number => !!id))];
+    const turnos = idsTurno.length
+      ? await this.turnoFijoRepository.find({ where: { id_turno_fijo: In(idsTurno) } })
+      : [];
+    const turnosMap = new Map(turnos.map((t) => [t.id_turno_fijo, { id_turno_fijo: t.id_turno_fijo, fecha_desde: t.fecha_desde, fecha_hasta: t.fecha_hasta }]));
+
     return reservas.map(reserva => {
       const usuario = usuariosMap.get(reserva.id_usuario);
       const cancha = canchasMap.get(reserva.id_cancha);
@@ -140,7 +139,12 @@ export class ReservaService {
         hora_inicio: reserva.hora_inicio,
         hora_fin: reserva.hora_fin,
         precio_total: reserva.precio_total,
-        servicios: reserva.servicios && reserva.servicios.length > 0 
+        puntaje: reserva.puntaje ?? null,
+        resena: reserva.resena ?? null,
+        estado: reserva.estado,
+        id_turno_fijo: reserva.id_turno_fijo ?? null,
+        turno_fijo: reserva.id_turno_fijo ? turnosMap.get(reserva.id_turno_fijo) ?? null : null,
+        servicios: reserva.servicios && reserva.servicios.length > 0
           ? reserva.servicios.map((s: any) => s.nombre).join(', ')
           : '-'
       };
@@ -199,7 +203,11 @@ export class ReservaService {
       fecha: reservaData.fecha,
       hora_inicio: reservaData.hora_inicio,
       hora_fin: reservaData.hora_fin,
-      precio_total: precioTotalFinal
+      precio_total: precioTotalFinal,
+      ...(reservaData.puntaje !== undefined && { puntaje: reservaData.puntaje }),
+      ...(reservaData.resena !== undefined && { resena: reservaData.resena }),
+      ...(reservaData.estado !== undefined && { estado: reservaData.estado }),
+      ...(reservaData.id_turno_fijo !== undefined && { id_turno_fijo: reservaData.id_turno_fijo }),
     };
 
     await this.repository.actualizar(reservaActualizada);
@@ -333,7 +341,7 @@ export class ReservaService {
     const canchas = idsCancha.length
       ? await this.canchaRepository.find({
           where: { id_cancha: In(idsCancha) },
-          relations: ['localidad', 'tipo_cancha'],
+          relations: ['tipo_cancha'],
         })
       : [];
 
@@ -347,7 +355,6 @@ export class ReservaService {
         return {
           ...reserva,
           cancha_nombre: cancha?.nombre,
-          localidad: cancha?.localidad?.nombre,
           deporte: cancha?.tipo_cancha?.deporte,
           tipo_cancha: cancha?.tipo_cancha?.nombre,
           servicios: servicios.map(s => s.nombre)
@@ -358,14 +365,101 @@ export class ReservaService {
     return reservasCompletas;
   }
 
+  // reseñas
+
+  // puntuar una reserva ya jugada
+  async registrarResena(
+    id_reserva: number,
+    user: { id_usuario: number; rol: string },
+    data: { puntaje: number; resena?: string }
+  ): Promise<Reserva> {
+    const repo = AppDataSource.getRepository(Reserva);
+    const reserva = await repo.findOne({ where: { id_reserva } });
+    if (!reserva) throw new ErrorHttp(404, 'Reserva no encontrada');
+
+    if (user.rol !== 'administrador' && reserva.id_usuario !== user.id_usuario) {
+      throw new ErrorHttp(403, 'Solo podés reseñar tus propias reservas');
+    }
+
+    const puntaje = Number(data.puntaje);
+    if (!Number.isInteger(puntaje) || puntaje < 1 || puntaje > 5) {
+      throw new ErrorHttp(400, 'El puntaje debe ser un entero entre 1 y 5');
+    }
+
+    const resena = (data.resena ?? '').trim();
+    if (resena.length > 500) {
+      throw new ErrorHttp(400, 'La reseña no puede superar los 500 caracteres');
+    }
+
+    const fin = new Date(`${reserva.fecha}T${reserva.hora_fin}`);
+    if (fin.getTime() > Date.now()) {
+      throw new ErrorHttp(400, 'Solo podés reseñar una reserva una vez que ya se jugó');
+    }
+
+    reserva.puntaje = puntaje;
+    reserva.resena = resena || null;
+    return repo.save(reserva);
+  }
+
+  async eliminarResena(id_reserva: number): Promise<void> {
+    const repo = AppDataSource.getRepository(Reserva);
+    const reserva = await repo.findOne({ where: { id_reserva } });
+    if (!reserva) throw new ErrorHttp(404, 'Reserva no encontrada');
+    reserva.puntaje = null;
+    reserva.resena = null;
+    await repo.save(reserva);
+  }
+
+  // listado de reseñas con promedio
+  async obtenerResenas() {
+    const reservas = await AppDataSource.getRepository(Reserva)
+      .createQueryBuilder('reserva')
+      .where('reserva.puntaje IS NOT NULL')
+      .orderBy('reserva.fecha', 'DESC')
+      .addOrderBy('reserva.hora_inicio', 'DESC')
+      .getMany();
+
+    const idsUsuario = [...new Set(reservas.map((r) => r.id_usuario))];
+    const idsCancha = [...new Set(reservas.map((r) => r.id_cancha))];
+    const usuarios = idsUsuario.length ? await this.usuarioRepository.find({ where: { id_usuario: In(idsUsuario) } }) : [];
+    const canchas = idsCancha.length ? await this.canchaRepository.find({ where: { id_cancha: In(idsCancha) } }) : [];
+    const usuariosMap = new Map(usuarios.map((u) => [u.id_usuario, u]));
+    const canchasMap = new Map(canchas.map((c) => [c.id_cancha, c]));
+
+    const resenas = reservas.map((r) => {
+      const u = usuariosMap.get(r.id_usuario);
+      return {
+        id_reserva: r.id_reserva,
+        id_usuario: r.id_usuario,
+        usuario_nombre: u ? `${u.nombre} ${u.apellido}` : `Usuario ${r.id_usuario}`,
+        id_cancha: r.id_cancha,
+        cancha_nombre: canchasMap.get(r.id_cancha)?.nombre ?? `Cancha ${r.id_cancha}`,
+        fecha: r.fecha,
+        puntaje: r.puntaje,
+        resena: r.resena,
+      };
+    });
+
+    const total = resenas.length;
+    const promedio = total ? Number((resenas.reduce((a, r) => a + (r.puntaje ?? 0), 0) / total).toFixed(2)) : 0;
+    return { total, promedio, resenas };
+  }
+
 //para modificar pagos pendientes
   async puedeModificar(id_reserva: number): Promise<boolean> {
     const pago = await this.pagoRepository.findOne({
       where: { id_reserva },
-      order: { fecha_creacion: 'DESC' },
+      order: { id_pago: 'DESC' },
     });
 
     // si no hay pago o el pago está pendiente, se puede modificar
     return !pago || pago.estado === 'pendiente';
+  }
+}
+
+// error con status http
+export class ErrorHttp extends Error {
+  constructor(public status: number, message: string) {
+    super(message);
   }
 }

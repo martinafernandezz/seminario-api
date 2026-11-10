@@ -7,7 +7,7 @@ const service = new BusquedaCanchaService(canchaRepository);
 
 export async function buscarCanchas(req: Request, res: Response) {
   try {
-    const { fecha, id_tipo, id_localidad } = req.query;
+    const { fecha, id_tipo } = req.query;
 
     // Validar fecha requerida
     if (!fecha) {
@@ -27,8 +27,7 @@ export async function buscarCanchas(req: Request, res: Response) {
 
     const canchas = await service.buscarCanchasDisponibles(
       String(fecha),
-      id_tipo ? Number(id_tipo) : undefined,
-      id_localidad ? Number(id_localidad) : undefined
+      id_tipo ? Number(id_tipo) : undefined
     );
 
     res.json({
@@ -36,8 +35,7 @@ export async function buscarCanchas(req: Request, res: Response) {
       data: {
         fecha: fecha,
         filtros: {
-          id_tipo: id_tipo || null,
-          id_localidad: id_localidad || null
+          id_tipo: id_tipo || null
         },
         total_canchas: canchas.length,
         canchas
@@ -56,25 +54,23 @@ export async function buscarCanchasPorNombres(req: Request, res: Response) {
   try {
     console.log('🔍 POST body:', req.body);
     
-    const { deporte, localidad, fecha } = req.body;
+    const { deporte, fecha } = req.body;
 
     // Usar fecha actual si no se proporciona
     const fechaBusqueda = fecha || new Date().toISOString().split('T')[0];
 
-    // Validar que se proporcionen deporte y localidad
-    if (!deporte || !localidad) {
+    if (!deporte) {
       return res.status(400).json({
         success: false,
-        message: 'Deporte y localidad son requeridos'
+        message: 'El deporte es requerido'
       });
     }
 
-    console.log(`🔍 Buscando: deporte=${deporte}, localidad=${localidad}, fecha=${fechaBusqueda}`);
+    console.log(`🔍 Buscando: deporte=${deporte}, fecha=${fechaBusqueda}`);
 
     // Usar el nuevo método del servicio
     const canchas = await service.buscarCanchasPorNombre(
       deporte,
-      localidad,
       fechaBusqueda
     );
 
@@ -83,8 +79,7 @@ export async function buscarCanchasPorNombres(req: Request, res: Response) {
       data: {
         fecha: fechaBusqueda,
         filtros: {
-          deporte,
-          localidad
+          deporte
         },
         total_canchas: canchas.length,
         canchas

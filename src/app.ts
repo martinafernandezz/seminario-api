@@ -7,8 +7,8 @@ import { swaggerSpec } from './swagger.js';
 import canchaRouter from './cancha/cancha.routes.js';
 import usuarioRouter from './usuario/usuario.routes.js';
 import tipoCanchaRouter from './tipo_cancha/tipo-cancha.routes.js';
-import localidadRouter from './localidad/localidad.routes.js';
 import reservaRouter from './reserva/reserva.routes.js';
+import turnoFijoRouter from './turno_fijo/turno-fijo.routes.js';
 import precioRoutes from './precio/precio.routes.js';
 import servicioRoutes from './servicio/servicio.routes.js';
 import reservaServicioRoutes from './reserva-servicio/reserva-servicio.routes.js';
@@ -22,10 +22,10 @@ import { AppDataSource } from './database/data-source.js';
 if (process.env.NODE_ENV !== 'test') {
   AppDataSource.initialize()
     .then(() => {
-      console.log('TypeORM conectado a MySQL');
+      console.log('TypeORM conectado a PostgreSQL');
     })
     .catch((error) => {
-      console.error('Error al conectar con MySQL:', error);
+      console.error('Error al conectar con PostgreSQL:', error);
     });
 }
 
@@ -38,8 +38,8 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/canchas', canchaRouter);
 app.use('/api/usuarios', usuarioRouter);
 app.use('/api/tipo-canchas', tipoCanchaRouter);
-app.use('/api/localidades', localidadRouter);
 app.use('/api/reservas', reservaRouter);
+app.use('/api/turnos-fijos', turnoFijoRouter);
 app.use('/api/precios', precioRoutes);
 app.use('/api/servicios', servicioRoutes);
 app.use('/reserva-servicio', reservaServicioRoutes);

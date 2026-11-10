@@ -5,10 +5,10 @@ export class PagoService {
   constructor(private repository: PagoRepository) {}
 
   async crearPago(data: PagoCreate): Promise<Pago> {
-    // Verificar que no exista ya un pago para esta reserva
-    const pagoExistente = await this.repository.findByReserva(data.id_reserva);
-    if (pagoExistente) {
-      throw new Error('Ya existe un pago para esta reserva');
+    // maximo 2 pagos por reserva
+    const pagosExistentes = await this.repository.findAllByReserva(data.id_reserva);
+    if (pagosExistentes.length >= 2) {
+      throw new Error('La reserva ya tiene el máximo de 2 pagos (seña + saldo)');
     }
 
     return this.repository.create(data);
@@ -24,10 +24,9 @@ export class PagoService {
     return this.repository.findByReserva(id_reserva);
   }
 
-  async procesarPago(id_pago: number, transaccion_id: string): Promise<Pago> {
+  async procesarPago(id_pago: number): Promise<Pago> {
     const pago = await this.repository.update(id_pago, {
-      estado: 'completado',
-      transaccion_id
+      estado: 'completado'
     });
     if (!pago) throw new Error('Pago no encontrado');
     return pago;
@@ -50,10 +49,8 @@ export class PagoService {
           const exito = Math.random() > 0.2;
           
           if (exito) {
-            const transaccion_id = `TXN_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
             const pago = await this.repository.update(id_pago, {
-              estado: 'completado',
-              transaccion_id
+              estado: 'completado'
             });
             if (!pago) reject(new Error('Pago no encontrado'));
             else resolve(pago);

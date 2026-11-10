@@ -1,14 +1,15 @@
+import { LessThanOrEqual } from 'typeorm';
 import { DisponibilidadService } from '../disponibilidad/disponibilidad.service.js';
 import { CanchaRepository } from '../cancha/cancha.repository.js';
 import { CanchaConDisponibilidad } from './busqueda-cancha.entity.js';
 import { AppDataSource } from '../database/data-source.js';
 import { TipoCancha } from '../tipo_cancha/tipo-cancha.entity.js';
-import { Localidad } from '../localidad/localidad.entity.js';
+import { Precio } from '../precio/precio.entity.js';
 
 export class BusquedaCanchaService {
   private disponibilidadService: DisponibilidadService;
   private tipoCanchaRepository = AppDataSource.getRepository(TipoCancha);
-  private localidadRepository = AppDataSource.getRepository(Localidad);
+  private precioRepository = AppDataSource.getRepository(Precio);
 
   constructor(private canchaRepository: CanchaRepository) {
     this.disponibilidadService = new DisponibilidadService(canchaRepository);
@@ -16,60 +17,35 @@ export class BusquedaCanchaService {
 
   async buscarCanchasPorNombre(
     deporte: string,
-    localidad: string,
     fecha?: string
   ): Promise<CanchaConDisponibilidad[]> {
-    console.log('🔍 Búsqueda por nombre:', { deporte, localidad, fecha });
+    console.log('🔍 Búsqueda por deporte:', { deporte, fecha });
 
-    const [tipo, localidadEncontrada] = await Promise.all([
-      this.tipoCanchaRepository.findOne({ where: { deporte } }),
-      this.localidadRepository.findOne({ where: { nombre: localidad } }),
-    ]);
-
-    if (!tipo || !localidadEncontrada) {
-      console.log('❌ No se encontraron IDs');
+    // varios tipos comparten deporte
+    const tipos = await this.tipoCanchaRepository.find({ where: { deporte } });
+    if (tipos.length === 0) {
+      console.log('❌ No se encontró el deporte');
       return [];
     }
 
-    return await this.buscarCanchasDisponibles(
-      fecha || new Date().toISOString().split('T')[0],
-      tipo.id_tipo,
-      localidadEncontrada.id
+    const fechaBusqueda = fecha || new Date().toISOString().split('T')[0];
+    const resultados = await Promise.all(
+      tipos.map((tipo) => this.buscarCanchasDisponibles(fechaBusqueda, tipo.id_tipo))
     );
+    return resultados.flat();
   }
 
   async buscarCanchasDisponibles(
     fecha: string,
-    id_tipo?: number,
-    id_localidad?: number
+    id_tipo?: number
   ): Promise<CanchaConDisponibilidad[]> {
-    const where: {
-      estado: 'disponible';
-      id_tipo?: number;
-      id_localidad?: number;
-    } = {
-      estado: 'disponible',
-    };
-
-    if (id_tipo) {
-      where.id_tipo = id_tipo;
-    }
-
-    if (id_localidad) {
-      where.id_localidad = id_localidad;
-    }
-
     const canchas = await this.canchaRepository.findAll();
     const canchasFiltradas = canchas.filter((cancha) => {
       if (cancha.estado !== 'disponible') {
         return false;
       }
 
-      if (where.id_tipo !== undefined && cancha.id_tipo !== where.id_tipo) {
-        return false;
-      }
-
-      if (where.id_localidad !== undefined && cancha.id_localidad !== where.id_localidad) {
+      if (id_tipo !== undefined && cancha.id_tipo !== id_tipo) {
         return false;
       }
 
@@ -90,6 +66,12 @@ export class BusquedaCanchaService {
           fecha
         });
 
+        // precio vigente a esa fecha
+        const precio = await this.precioRepository.findOne({
+          where: { id_cancha: cancha.id_cancha, fecha_vigencia: LessThanOrEqual(fecha) },
+          order: { fecha_vigencia: 'DESC' },
+        });
+
         console.log(`⏰ Cancha ${cancha.nombre}: ${horarios.length} horarios`);
 
         canchasConDisponibilidad.push({
@@ -97,12 +79,8 @@ export class BusquedaCanchaService {
           nombre: cancha.nombre,
           estado: cancha.estado,
           id_tipo: cancha.id_tipo,
-          id_localidad: cancha.id_localidad,
-          precio_hora: Number(cancha.precio_hora) || 0,
-          hora_apertura: cancha.hora_apertura,
-          hora_cierre: cancha.hora_cierre,
+          precio_hora: precio ? Number(precio.precio_por_hora) : 0,
           tipo_nombre: cancha.tipo_cancha?.deporte,
-          localidad_nombre: cancha.localidad?.nombre,
           horarios_disponibles: horarios
         });
       } catch (error) {

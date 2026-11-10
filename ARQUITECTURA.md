@@ -17,7 +17,7 @@
 Backend para gestión de reservas de canchas deportivas construido con:
 
 - Node.js + TypeScript + Express
-- MySQL
+- PostgreSQL
 - TypeORM
 - JWT + bcrypt
 - Jest + Supertest
@@ -34,7 +34,7 @@ Principios arquitectónicos:
 ## Arquitectura en Capas
 
 ```
-Cliente -> Routes -> Controller -> Service -> Repository -> TypeORM -> MySQL
+Cliente -> Routes -> Controller -> Service -> Repository -> TypeORM -> PostgreSQL
 ```
 
 Capas principales:
@@ -50,7 +50,7 @@ Flujo ejemplo (crear reserva):
 2. Route deriva al controller.
 3. Controller delega al service.
 4. Service calcula precio total (cancha + servicios).
-5. Repository persiste reserva y relaciones N:M.
+5. Repository persiste reserva y sus servicios.
 6. Controller responde 201 con payload final.
 
 ---
@@ -74,13 +74,13 @@ Módulos principales del dominio:
 - Detección de solapamientos con reservas existentes.
 
 4. Búsqueda de Cancha
-- Filtros por deporte, localidad y fecha.
+- Filtros por deporte y fecha.
 - Integración con disponibilidad para respuesta enriquecida.
 
 5. Usuario
 - CRUD con reglas por rol y ownership.
 
-6. Cancha, Servicio, Precio, Pago, Localidad, Tipo Cancha, Reserva-Servicio
+6. Cancha, Servicio, Precio, Pago, Turno Fijo, Tipo Cancha, Reserva-Servicio
 - Operaciones de negocio y mantenimiento de catálogos.
 
 ---
@@ -109,7 +109,7 @@ Configuración por entorno:
 
 ## Persistencia y Base de Datos
 
-El proyecto utiliza TypeORM como capa de acceso a datos, con MySQL como motor.
+El proyecto utiliza TypeORM como capa de acceso a datos, con PostgreSQL como motor.
 
 Configuración central:
 
@@ -129,17 +129,18 @@ usuario -> reserva <- cancha
            |
            +-> pago
 
-reserva <-> servicio (reserva_servicio)
+reserva -> servicio (servicio.id_reserva)
 cancha -> precio (historial por vigencia)
-cancha -> tipocancha
-cancha -> localidad
+cancha -> tipo_cancha
+reserva -> turno_fijo
 ```
 
 Relaciones clave:
 
 - usuario 1:N reserva
 - cancha 1:N reserva
-- reserva N:M servicio (tabla intermedia reserva_servicio)
+- reserva 1:N servicio (cada servicio pertenece a una sola reserva)
+- turno_fijo 1:N reserva
 - cancha 1:N precio
 
 ---
@@ -167,7 +168,7 @@ Notas:
 
 - Setup global en `src/__tests__/setup.ts`.
 - Pruebas actuales validan autenticación, middlewares y rutas base de auth.
-- La suite se ejecuta sin pool MySQL manual, alineada con uso de TypeORM.
+- La suite se ejecuta sin pool manual, alineada con uso de TypeORM.
 
 ---
 
@@ -203,7 +204,7 @@ Recomendaciones para producción:
 - CORS con orígenes explícitos.
 - Rate limiting en endpoints públicos.
 - Observabilidad y logging estructurado.
-- Backups automáticos de MySQL.
+- Backups automáticos de PostgreSQL.
 
 ---
 
@@ -232,5 +233,5 @@ Documentación relacionada:
 
 - [README.md](README.md)
 - [docs/JWT-IMPLEMENTATION.md](docs/JWT-IMPLEMENTATION.md)
-- [docs/mysql-commands.sql](docs/mysql-commands.sql)
+- [database/schema.sql](database/schema.sql)
 

@@ -1,18 +1,14 @@
 {
     "sqltools.connections": [
         {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
             "ssh": "Disabled",
             "previewLimit": 50,
             "server": "localhost",
-            "port": 3306,
-            "driver": "MySQL",
-            "name": "tp_dsw",
-            "database": "tp",
-            "username": "root"
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "olimpo",
+            "database": "olimpo",
+            "username": "postgres"
         }
     ],
     "postman.settings.dotenv-detection-notification-visibility": false

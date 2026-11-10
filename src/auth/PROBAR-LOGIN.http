@@ -86,10 +86,9 @@ Content-Type: application/json
   "password": "password123",
   "nombre": "Nuevo",
   "apellido": "Usuario",
-  "email": "nuevo@example.com",
+  "mail": "nuevo@example.com",
   "telefono": "3412345678",
-  "rol": "cliente",
-  "id_localidad": 1
+  "rol": "cliente"
 }
 
 ###
