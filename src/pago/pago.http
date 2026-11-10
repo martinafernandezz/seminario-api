@@ -16,11 +16,6 @@ GET http://localhost:3000/api/pagos/reserva/1
 
 ### 🟢 PROCESAR PAGO (confirmar)
 PUT http://localhost:3000/api/pagos/1/procesar
-Content-Type: application/json
-
-{
-  "transaccion_id": "TXN_123456789"
-}
 
 ### 🟢 SIMULAR PAGO (con delay de 3 segundos)
 POST http://localhost:3000/api/pagos/1/simular

@@ -1,5 +1,5 @@
 import { PrecioRepository } from './precio.repository.js';
-import { Precio, PrecioCreate } from './precio.entity.js';
+import { Precio, PrecioCreate, PrecioUpdate } from './precio.entity.js';
 
 export class PrecioService {
   private repository: PrecioRepository;
@@ -51,11 +51,11 @@ export class PrecioService {
     }
   }
 
-  async actualizar(id_precio: number, precioData: Partial<Precio>): Promise<Precio> {
+  async actualizar(id_cancha: number, fecha_vigencia: string, precioData: PrecioUpdate): Promise<Precio> {
     try {
-      console.log('✏️ Actualizando precio:', id_precio, precioData);
-      await this.repository.update(id_precio, precioData);
-      const precioActualizado = await this.repository.findById(id_precio);
+      console.log('✏️ Actualizando precio:', id_cancha, fecha_vigencia, precioData);
+      await this.repository.update(id_cancha, fecha_vigencia, precioData);
+      const precioActualizado = await this.repository.findById(id_cancha, fecha_vigencia);
       if (!precioActualizado) {
         throw new Error('No se pudo encontrar el precio actualizado');
       }
@@ -67,10 +67,10 @@ export class PrecioService {
     }
   }
 
-  async eliminar(id_precio: number): Promise<void> {
+  async eliminar(id_cancha: number, fecha_vigencia: string): Promise<void> {
     try {
-      console.log('🗑️ Eliminando precio:', id_precio);
-      await this.repository.delete(id_precio);
+      console.log('🗑️ Eliminando precio:', id_cancha, fecha_vigencia);
+      await this.repository.delete(id_cancha, fecha_vigencia);
       console.log('✅ Precio eliminado');
     } catch (error) {
       console.error('❌ Error en PrecioService.eliminar:', error);
@@ -78,9 +78,9 @@ export class PrecioService {
     }
   }
 
-  async obtenerPorId(id_precio: number): Promise<Precio | null> {
+  async obtenerPorId(id_cancha: number, fecha_vigencia: string): Promise<Precio | null> {
     try {
-      return await this.repository.findById(id_precio);
+      return await this.repository.findById(id_cancha, fecha_vigencia);
     } catch (error) {
       console.error('Error en PrecioService.obtenerPorId:', error);
       throw error;

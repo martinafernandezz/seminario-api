@@ -6,7 +6,6 @@ Content-Type: application/json
   "dni": "123456789",
   "nombre": "Juan Roman",
   "apellido": "Riquelme",
-  "id_localidad": 1,
   "rol": "Administrador"
 }
 
@@ -18,7 +17,6 @@ Content-Type: application/json
   "dni": "23456789",
   "nombre": "María",
   "apellido": "González",
-  "id_localidad": 1,
   "rol": "cliente"
 }
 
@@ -30,7 +28,6 @@ Content-Type: application/json
   "dni": "34567890",
   "nombre": "Carlos",
   "apellido": "Rodríguez",
-  "id_localidad": 2,
   "rol": "cliente"
 }
 
@@ -42,7 +39,6 @@ Content-Type: application/json
   "dni": "99999999",
   "nombre": "Admin",
   "apellido": "Sistema",
-  "id_localidad": 1,
   "rol": "administrador"
 }
 
@@ -71,12 +67,12 @@ Content-Type: application/json
   "apellido": "Palermo"
 }
 
-### Actualizar Usuario (cambiar localidad)
+### Actualizar Usuario (cambiar telefono)
 PATCH http://localhost:3000/api/usuarios/6
 Content-Type: application/json
 
 {
-  "id_localidad": 2
+  "telefono": 3415550000
 }
 
 ### Eliminar Usuario

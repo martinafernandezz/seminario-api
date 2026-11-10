@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { CanchaService } from './cancha.service.js';
 import { AppDataSource } from '../database/data-source.js';
-import { Cancha } from './cancha.entity.js';
+import { Cancha, HORA_APERTURA, HORA_CIERRE } from './cancha.entity.js';
 import { Reserva } from '../reserva/reserva.entity.js';
 import { In } from 'typeorm';
 
@@ -106,24 +106,19 @@ export class CanchaController {
 
  obtenerDisponibilidad = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { fecha, id_localidad, id_tipo } = req.query;
+    const { fecha, id_tipo } = req.query;
     
-    console.log(`🔍 Buscando disponibilidad - Fecha: ${fecha}, Localidad: ${id_localidad}, Tipo: ${id_tipo}`);
+    console.log(`🔍 Buscando disponibilidad - Fecha: ${fecha}, Tipo: ${id_tipo}`);
     
     const canchaRepository = AppDataSource.getRepository(Cancha);
     const reservaRepository = AppDataSource.getRepository(Reserva);
 
     const where: {
       estado: 'disponible';
-      id_localidad?: number;
       id_tipo?: number;
     } = {
       estado: 'disponible',
     };
-
-    if (id_localidad) {
-      where.id_localidad = Number(id_localidad);
-    }
 
     if (id_tipo) {
       where.id_tipo = Number(id_tipo);
@@ -131,7 +126,7 @@ export class CanchaController {
 
     const canchas = await canchaRepository.find({
       where,
-      relations: ['localidad', 'tipo_cancha'],
+      relations: ['tipo_cancha'],
     });
 
     console.log(`🏟️ Canchas encontradas: ${canchas.length}`);
@@ -154,15 +149,14 @@ export class CanchaController {
 
         console.log(` Cancha ${cancha.nombre}: ${reservasCancha.length} reservas encontradas`);
         
-        // 3. Calcular horarios disponibles basados en hora_apertura y hora_cierre
+        // horarios libres dentro del horario de atención
         const horariosOcupados = reservasCancha.map((r) => ({
           inicio: r.hora_inicio,
           fin: r.hora_fin
         }));
         
-        // Usar horarios de la cancha o valores por defecto
-        const horaApertura = cancha.hora_apertura || '08:00:00';
-        const horaCierre = cancha.hora_cierre || '22:00:00';
+        const horaApertura = HORA_APERTURA;
+        const horaCierre = HORA_CIERRE;
         
         const horariosDisponibles = this.calcularHorariosDisponibles(
           horaApertura, 
@@ -172,7 +166,6 @@ export class CanchaController {
         
         return {
           ...cancha,
-          localidad_nombre: cancha.localidad?.nombre,
           tipo_nombre: cancha.tipo_cancha?.nombre,
           deporte: cancha.tipo_cancha?.deporte,
           horarios_disponibles: horariosDisponibles,

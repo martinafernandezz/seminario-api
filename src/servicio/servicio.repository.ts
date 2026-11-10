@@ -31,15 +31,6 @@ export class ServicioRepository {
   }
 
   async obtenerPorReserva(id_reserva: number): Promise<Servicio[]> {
-    const servicios = await this.repository
-      .createQueryBuilder('servicio')
-      .innerJoinAndSelect(
-        'servicio.reservas',
-        'reserva',
-        'reserva.id_reserva = :id_reserva',
-        { id_reserva }
-      )
-      .getMany();
-    return servicios;
+    return this.repository.find({ where: { id_reserva } });
   }
 }

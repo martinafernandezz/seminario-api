@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ReservaService } from './reserva.service.js';
+import { ReservaService, ErrorHttp } from './reserva.service.js';
 
 export class ReservaController {
   private service: ReservaService;
@@ -88,6 +88,39 @@ export class ReservaController {
       res.json({ success: true, data: precio });
     } catch (error: any) {
       res.status(400).json({ success: false, message: error.message });
+    }
+  }
+
+  // reseñas
+  private responderError(res: Response, error: any) {
+    const status = error instanceof ErrorHttp ? error.status : 500;
+    res.status(status).json({ success: false, message: error.message });
+  }
+
+  async obtenerResenas(req: Request, res: Response) {
+    try {
+      const data = await this.service.obtenerResenas();
+      res.json({ success: true, data });
+    } catch (error: any) {
+      this.responderError(res, error);
+    }
+  }
+
+  async registrarResena(req: Request, res: Response) {
+    try {
+      const reserva = await this.service.registrarResena(Number(req.params.id), req.user!, req.body);
+      res.json({ success: true, data: reserva, message: 'Reseña guardada' });
+    } catch (error: any) {
+      this.responderError(res, error);
+    }
+  }
+
+  async eliminarResena(req: Request, res: Response) {
+    try {
+      await this.service.eliminarResena(Number(req.params.id));
+      res.json({ success: true, message: 'Reseña eliminada' });
+    } catch (error: any) {
+      this.responderError(res, error);
     }
   }
 }

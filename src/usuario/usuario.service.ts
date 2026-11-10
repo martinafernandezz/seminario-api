@@ -19,7 +19,7 @@ export class UsuarioService {
     return usuario;
   }
 
-  async obtenerPorDni(dni: string): Promise<Usuario> {
+  async obtenerPorDni(dni: number): Promise<Usuario> {
     const usuario = await this.repository.findByDni(dni);
     if (!usuario) throw new Error('Usuario no encontrado');
     return usuario;

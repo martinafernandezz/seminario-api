@@ -28,7 +28,6 @@ const options: swaggerJsdoc.Options = {
       { name: 'Usuarios', description: 'Gestión de usuarios' },
       { name: 'Canchas', description: 'Gestión de canchas' },
       { name: 'Tipo Cancha', description: 'Tipos de cancha' },
-      { name: 'Localidades', description: 'Localidades' },
       { name: 'Reservas', description: 'Gestión de reservas' },
       { name: 'Precios', description: 'Precios de canchas' },
       { name: 'Servicios', description: 'Servicios adicionales' },
@@ -98,8 +97,13 @@ const options: swaggerJsdoc.Options = {
               'application/json': {
                 schema: {
                   type: 'object',
-                  required: ['username', 'password', 'rol'],
+                  required: ['nombre', 'apellido', 'dni', 'username', 'password', 'mail'],
                   properties: {
+                    nombre: { type: 'string', example: 'Juan' },
+                    apellido: { type: 'string', example: 'Perez' },
+                    dni: { type: 'integer', example: 12345678 },
+                    mail: { type: 'string', example: 'juan@example.com' },
+                    telefono: { type: 'integer', example: 3415551234 },
                     username: { type: 'string', example: 'nuevo_usuario' },
                     password: { type: 'string', example: 'password123' },
                     rol: { type: 'string', enum: ['cliente', 'administrador'], example: 'cliente' },
@@ -164,12 +168,11 @@ const options: swaggerJsdoc.Options = {
               'application/json': {
                 schema: {
                   type: 'object',
-                  required: ['nombre', 'direccion', 'id_localidad', 'id_tipo_cancha'],
+                  required: ['nombre', 'id_tipo'],
                   properties: {
                     nombre: { type: 'string', example: 'Cancha A' },
-                    direccion: { type: 'string', example: 'Av. Ejemplo 123' },
-                    id_localidad: { type: 'integer', example: 1 },
-                    id_tipo_cancha: { type: 'integer', example: 2 },
+                    estado: { type: 'string', example: 'disponible' },
+                    id_tipo: { type: 'integer', example: 2 },
                   },
                 },
               },
@@ -256,34 +259,6 @@ const options: swaggerJsdoc.Options = {
           security: [{ bearerAuth: [] }],
           parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
           responses: { 200: { description: 'Reserva cancelada' } },
-        },
-      },
-
-      // ─── LOCALIDADES ──────────────────────────────────────────────────────
-      '/api/localidades': {
-        get: {
-          tags: ['Localidades'],
-          summary: 'Obtener todas las localidades',
-          responses: { 200: { description: 'Lista de localidades' } },
-        },
-        post: {
-          tags: ['Localidades'],
-          summary: 'Crear una localidad',
-          security: [{ bearerAuth: [] }],
-          requestBody: {
-            required: true,
-            content: {
-              'application/json': {
-                schema: {
-                  type: 'object',
-                  properties: {
-                    nombre: { type: 'string', example: 'Rosario' },
-                  },
-                },
-              },
-            },
-          },
-          responses: { 201: { description: 'Localidad creada' } },
         },
       },
 
@@ -380,8 +355,7 @@ const options: swaggerJsdoc.Options = {
           tags: ['Búsqueda'],
           summary: 'Buscar canchas disponibles',
           parameters: [
-            { name: 'localidad', in: 'query', schema: { type: 'integer' } },
-            { name: 'tipo_cancha', in: 'query', schema: { type: 'integer' } },
+            { name: 'id_tipo', in: 'query', schema: { type: 'integer' } },
             { name: 'fecha', in: 'query', schema: { type: 'string', format: 'date' } },
           ],
           responses: { 200: { description: 'Lista de canchas disponibles' } },

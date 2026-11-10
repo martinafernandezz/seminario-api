@@ -18,10 +18,9 @@ Content-Type: {{contentType}}
   "password": "password123",
   "nombre": "Test",
   "apellido": "User",
-  "email": "test@example.com",
+  "mail": "test@example.com",
   "telefono": "3412345678",
-  "rol": "cliente",
-  "id_localidad": 1
+  "rol": "cliente"
 }
 
 ###
@@ -42,10 +41,9 @@ Content-Type: {{contentType}}
   "password": "admin123",
   "nombre": "Admin",
   "apellido": "User",
-  "email": "admin@example.com",
+  "mail": "admin@example.com",
   "telefono": "3419876543",
-  "rol": "administrador",
-  "id_localidad": 1
+  "rol": "administrador"
 }
 
 ###
@@ -116,10 +114,9 @@ Content-Type: {{contentType}}
   "password": "password123",
   "nombre": "Duplicate",
   "apellido": "User",
-  "email": "duplicate@example.com",
+  "mail": "duplicate@example.com",
   "telefono": "3411111111",
-  "rol": "cliente",
-  "id_localidad": 1
+  "rol": "cliente"
 }
 
 ###

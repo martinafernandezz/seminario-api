@@ -1,6 +1,12 @@
 import { Request, Response } from 'express';
 import { UsuarioService } from './usuario.service.js';
-import { RolUsuario } from './usuario.entity.js';
+import { RolUsuario, Usuario } from './usuario.entity.js';
+
+// nunca devolver el hash de la clave
+const sinPassword = (u: Usuario) => {
+  const { password, ...resto } = u;
+  return resto;
+};
 
 
 export class UsuarioController {
@@ -11,7 +17,7 @@ export class UsuarioController {
       const usuario = await this.service.crearUsuario(req.body);
       res.status(201).json({
         success: true,
-        data: usuario,
+        data: sinPassword(usuario),
         message: 'Usuario creado exitosamente'
       });
     } catch (error) {
@@ -27,7 +33,7 @@ export class UsuarioController {
       const usuarios = await this.service.obtenerTodos();
       res.status(200).json({
         success: true,
-        data: usuarios
+        data: usuarios.map(sinPassword)
       });
     } catch {
       res.status(500).json({
@@ -41,7 +47,7 @@ export class UsuarioController {
     try {
       const id_usuario = parseInt(req.params.id_usuario);
       const usuario = await this.service.obtenerPorId(id_usuario);
-      res.status(200).json({ success: true, data: usuario });
+      res.status(200).json({ success: true, data: sinPassword(usuario) });
     } catch (error) {
       res.status(404).json({
         success: false,
@@ -52,9 +58,9 @@ export class UsuarioController {
 
   obtenerPorDni = async (req: Request, res: Response): Promise<void> => {
     try {
-      const dni = req.params.dni;
+      const dni = parseInt(req.params.dni);
       const usuario = await this.service.obtenerPorDni(dni);
-      res.status(200).json({ success: true, data: usuario });
+      res.status(200).json({ success: true, data: sinPassword(usuario) });
     } catch (error) {
       res.status(404).json({
         success: false,
@@ -75,7 +81,7 @@ export class UsuarioController {
       }
 
       const usuarios = await this.service.obtenerPorRol(rolParam as RolUsuario);
-      res.json({ success: true, data: usuarios });
+      res.json({ success: true, data: usuarios.map(sinPassword) });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Error al obtener usuarios por rol' });
     }
@@ -88,7 +94,7 @@ export class UsuarioController {
       const usuarioActualizado = await this.service.actualizar(id_usuario, req.body);
       res.status(200).json({
         success: true,
-        data: usuarioActualizado,
+        data: sinPassword(usuarioActualizado),
         message: 'Usuario actualizado exitosamente'
       });
     } catch (error) {

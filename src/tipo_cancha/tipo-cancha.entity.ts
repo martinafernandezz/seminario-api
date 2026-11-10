@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity('tipocancha')
+@Entity('tipo_cancha')
 export class TipoCancha {
   @PrimaryGeneratedColumn({ name: 'id_tipo' })
   id_tipo!: number;
@@ -11,7 +11,7 @@ export class TipoCancha {
   @Column({ name: 'deporte', type: 'varchar', length: 50 })
   deporte!: string;
 }
-  
+
 export interface TipoCanchaCreate {
   nombre: string;
   deporte: string;

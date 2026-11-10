@@ -55,9 +55,7 @@ export class PagoController {
   procesarPago = async (req: Request, res: Response): Promise<void> => {
     try {
       const id = parseInt(req.params.id);
-      const { transaccion_id } = req.body;
-      
-      const pago = await this.service.procesarPago(id, transaccion_id);
+      const pago = await this.service.procesarPago(id);
       res.status(200).json({
         success: true,
         data: pago,

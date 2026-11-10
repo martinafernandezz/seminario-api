@@ -58,9 +58,9 @@ export class PrecioController {
 
   async actualizar(req: Request, res: Response) {
     try {
-      console.log('🟢 PUT /api/precios/:id - Actualizando precio:', req.params.id_precio, req.body);
-      const id_precio = parseInt(req.params.id_precio);
-      const precioActualizado = await this.service.actualizar(id_precio, req.body);
+      console.log('🟢 PUT /api/precios/:id_cancha/:fecha_vigencia - Actualizando precio:', req.params, req.body);
+      const id_cancha = parseInt(req.params.id_cancha);
+      const precioActualizado = await this.service.actualizar(id_cancha, String(req.params.fecha_vigencia), req.body);
       res.status(200).json(precioActualizado);
     } catch (error: any) {
       console.error('🔴 Error en PUT /api/precios/:id:', error);
@@ -73,8 +73,8 @@ export class PrecioController {
 
   async eliminar(req: Request, res: Response) {
     try {
-      const id_precio = parseInt(req.params.id_precio);
-      await this.service.eliminar(id_precio);
+      const id_cancha = parseInt(req.params.id_cancha);
+      await this.service.eliminar(id_cancha, String(req.params.fecha_vigencia));
       res.status(200).json({ message: 'Precio eliminado correctamente' });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -83,8 +83,8 @@ export class PrecioController {
 
   async obtenerPorId(req: Request, res: Response) {
     try {
-      const id_precio = parseInt(req.params.id_precio);
-      const precio = await this.service.obtenerPorId(id_precio);
+      const id_cancha = parseInt(req.params.id_cancha);
+      const precio = await this.service.obtenerPorId(id_cancha, String(req.params.fecha_vigencia));
       if (!precio) {
         return res.status(404).json({ message: 'Precio no encontrado' });
       }

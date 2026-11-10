@@ -17,7 +17,7 @@ interface LoginResponse {
     username: string;
     nombre: string;
     apellido: string;
-    email: string;
+    mail: string;
     rol: 'administrador' | 'cliente';
   };
 }
@@ -31,8 +31,8 @@ export class AuthService {
 
   async register(data: UsuarioCreate): Promise<LoginResponse> {
     // Validar campos obligatorios
-    if (!data.username || !data.password || !data.email) {
-      throw new Error('Username, password y email son obligatorios');
+    if (!data.username || !data.password || !data.mail) {
+      throw new Error('Username, password y mail son obligatorios');
     }
 
     // Verificar que el username no exista
@@ -53,7 +53,7 @@ export class AuthService {
     // Generar token JWT
     const token = this.jwtService.generateToken({
       id_usuario: newUser.id_usuario,
-      username: newUser.username!,
+      username: newUser.username,
       rol: newUser.rol,
     });
 
@@ -63,10 +63,10 @@ export class AuthService {
       token,
       user: {
         id_usuario: newUser.id_usuario,
-        username: newUser.username!,
+        username: newUser.username,
         nombre: newUser.nombre,
         apellido: newUser.apellido,
-        email: newUser.email!,
+        mail: newUser.mail,
         rol: newUser.rol,
       },
     };
@@ -97,7 +97,7 @@ export class AuthService {
     // Generar token
     const token = this.jwtService.generateToken({
       id_usuario: usuario.id_usuario,
-      username: usuario.username!,
+      username: usuario.username,
       rol: usuario.rol,
     });
 
@@ -107,10 +107,10 @@ export class AuthService {
       token,
       user: {
         id_usuario: usuario.id_usuario,
-        username: usuario.username!,
+        username: usuario.username,
         nombre: usuario.nombre,
         apellido: usuario.apellido,
-        email: usuario.email!,
+        mail: usuario.mail,
         rol: usuario.rol,
       },
     };
